@@ -58,7 +58,7 @@ USER worker
 # client.py bootstraps the rest of the OpenBench client (worker.py and its
 # deps) from the server at runtime, so that's all we need to fetch here.
 RUN mkdir -p /home/worker/OpenBench/Client && \
-    curl -fsSL https://raw.githubusercontent.com/AndyGrant/OpenBench/master/Client/client.py \
+    curl -fsSL https://raw.githubusercontent.com/jgilchrist/OpenBench/master/Client/client.py \
         -o /home/worker/OpenBench/Client/client.py
 
 # credentials.<engine> files are bind-mounted read-only into the Client dir
