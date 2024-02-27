@@ -384,6 +384,9 @@ def collect_github_info(errors, request, field):
     private = EngineConfig.objects.filter(name=engine).values_list('private', flat=True).first()
     headers = {}
 
+    if 'OPENBENCH_GITHUB_PAT' in os.environ:
+        headers['Authorization'] = 'Bearer ' + os.environ['OPENBENCH_GITHUB_PAT']
+
     ## Step 1: Verify the target of the API requests
 
     # Private engines must have a token stored in credentials.enginename
