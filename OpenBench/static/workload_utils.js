@@ -27,6 +27,20 @@ function copy_text_from_element(element_id, keep_url) {
     copy_text(text);
 }
 
+function copy_penta_results() {
+
+    var text = document.getElementById('long-statblock').innerHTML;
+    text = text.replace(/<br>/g, "\n");
+
+    var match = text.match(/Penta\s*\|\s*\[(-?\d+),\s*(-?\d+),\s*(-?\d+),\s*(-?\d+),\s*(-?\d+)\]/);
+
+    if (!match) {
+        console.error("No pentanomial results found in stat block");
+        return;
+    }
+
+    copy_text(match.slice(1, 6).join(" "));
+}
 
 function populate_results(results) {
 
