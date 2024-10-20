@@ -42,6 +42,7 @@ from OpenSite.settings import MEDIA_ROOT, PROJECT_PATH
 from OpenBench.config import OPENBENCH_CONFIG, PRESET_TYPES, verify_engine_presets
 from OpenBench.models import *
 from OpenBench.stats import TrinomialSPRT, PentanomialSPRT
+from OpenBench.templatetags.mytags import longStatBlock
 
 import OpenBench.views
 import OpenBench.model_utils
@@ -636,5 +637,34 @@ def update_test(request, machine):
         Machine.objects.filter(id=machine_id).update(
             updated=timezone.now()
         )
+
+    discord_webhook_url = os.environ["OPENBENCH_DISCORD_WEBHOOK_URL"]
+
+    # Send update to webhook, if it exists
+    if test.finished and discord_webhook_url:
+        # Compute stats
+        lower, elo, upper = OpenBench.stats.Elo(test.results())
+        error = max(upper - elo, elo - lower)
+        elo   = OpenBench.templatetags.mytags.twoDigitPrecision(elo)
+        error = OpenBench.templatetags.mytags.twoDigitPrecision(error)
+        outcome = 'passed' if test.passed else 'failed'
+
+        # Green if passing, red if failing.
+        color = 0xFEFF58
+        if test.passed:
+            color = 0x37F769
+        elif test.wins < test.losses:
+            color = 0xFA4E4E
+
+        return requests.post(discord_webhook_url, json={
+            'username': test.dev_engine,
+            'embeds': [{
+                'author': { 'name': test.author },
+                'title': f'Test `{test.dev.name}` vs `{test.base.name}` {outcome}',
+                'url': request.build_absolute_uri(f'/test/{test_id}'),
+                'color': color,
+                'description': f'```\n{longStatBlock(test)}\n```',
+            }]
+        })
 
     return [{}, { 'stop' : True }][test.finished]
