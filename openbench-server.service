@@ -1,0 +1,10 @@
+[Unit]
+Description=Openbench
+
+[Service]
+User=openbench
+WorkingDirectory=/opt/openbench
+ExecStart=/opt/openbench/venv/bin/python manage.py runserver
+
+[Install]
+WantedBy=multi-user.target
