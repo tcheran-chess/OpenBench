@@ -1,0 +1,13 @@
+[Unit]
+Description=openbench-client
+After=network.target
+
+[Service]
+Type=simple
+User=openbench
+WorkingDirectory=/opt/openbench/Client
+ExecStart=/bin/bash -c 'PATH=/opt/rust/bin:$PATH /opt/openbench/Client/.venv/bin/python -u client.py -T $(nproc) -N 1 -I $(hostname) --syzygy /opt/syzygy'
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
