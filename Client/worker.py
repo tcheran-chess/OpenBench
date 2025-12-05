@@ -512,7 +512,7 @@ class MatchRunner:
 
         # Join options together in format expected by match runner
         options = ' option.'.join([''] + re.findall(r'"[^"]*"|\S+', options))
-        return '-engine dir=Engines/ cmd=./%s proto=uci %s%s name=%s-%s' % (command, control, options, engine, branch)
+        return '-engine cmd=./Engines/%s proto=uci %s%s name=%s-%s' % (command, control, options, engine, branch)
 
     @staticmethod
     def pgnout_settings(config, timestamp, runner_idx):
