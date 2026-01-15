@@ -79,14 +79,22 @@
     "datagen_presets" : {
 
         "default" : {
-            "win_adj"       : "None",
-            "draw_adj"      : "None",
+            "base_branch"   : "master",
+            "dev_branch"    : "master",
+            "both_options"  : "Threads=1 Hash=16",
+            "win_adj"       : "movecount=4 score=2000",
+            "draw_adj"      : "movenumber=40 movecount=8 score=10",
+            "syzygy_adj"    : "DISABLED",
+            "datagen_max_games"     : 1000000000,
             "workload_size" : 128
         },
 
-        "40k Nodes" : {
-            "both_options"      : "Threads=1 Hash=16",
-            "both_time_control" : "N=40000"
+        "5k Nodes" : {
+            "both_time_control" : "N=5000"
+        },
+
+        "20k Nodes" : {
+            "both_time_control" : "N=20000"
         }
     }
 }
