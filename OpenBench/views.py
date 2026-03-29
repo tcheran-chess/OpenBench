@@ -519,6 +519,24 @@ def new_workload(request, workload_type):
 
     return create_workload(request, workload_type.upper())
 
+
+def test_llr_history(request, id):
+    if OPENBENCH_CONFIG["require_login_to_view"] and not request.user.is_authenticated:
+        return HttpResponse(status=403)
+
+    if not (test := Test.objects.filter(id=id).first()):
+        return HttpResponse(status=404)
+
+    if test.test_mode != "SPRT":
+        return HttpResponse(status=204)
+
+    from OpenBench.templatetags.mytags import llr_history_graph
+
+    return HttpResponse(
+        str(llr_history_graph(test)), content_type="text/plain; charset=utf-8"
+    )
+
+
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #                          NETWORK MANAGEMENT VIEWS                           #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #

@@ -350,6 +350,186 @@ body, html, main{
     padding: 0.50rem 0.75rem;
 }
 
+/* LLR History Graph */
+
+#content .llr-history-panel {
+    margin: 0.5rem 0 0.75rem;
+}
+
+#content .llr-history-loader {
+    width: 372px;
+}
+
+#content .llr-history-widget {
+    position: relative;
+    z-index: 0;
+    width: 372px;
+}
+
+#content .llr-history-chart {
+    display: flex;
+    align-items: stretch;
+    gap: 0.55rem;
+}
+
+#content .llr-history-yaxis {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 0.35rem 0 1.6rem;
+    width: 44px;
+    color: #A7B1C2;
+    font-size: 10px;
+    text-align: right;
+}
+
+#content .llr-history-main {
+    display: flex;
+    flex-direction: column;
+    gap: 0.28rem;
+}
+
+#content .llr-history-plot {
+    position: relative;
+    z-index: 0;
+}
+
+#content .llr-history-placeholder {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #4C566A;
+    border-radius: 6px;
+    background: linear-gradient(135deg, #242933 0%, #2C3440 100%);
+    width: 320px;
+    height: 112px;
+    color: #A7B1C2;
+    font-size: 0.72rem;
+    letter-spacing: 0.02em;
+}
+
+#content .llr-history-placeholder-error {
+    color: #E07A7A;
+}
+
+#content .llr-history-label {
+    margin-bottom: 0.2rem;
+    color: var(--color-font3);
+    font-size: 0.85rem;
+}
+
+#content .llr-history-graph {
+    display: block;
+    width: 320px;
+    height: 112px;
+}
+
+#content .llr-history-graph .llr-bg {
+    fill: #242933;
+    stroke: #4C566A;
+    stroke-width: 1;
+}
+
+#content .llr-history-graph .llr-grid-line {
+    stroke: rgba(236, 239, 244, 0.14);
+    stroke-width: 1;
+}
+
+#content .llr-history-graph .llr-boundary {
+    opacity: 0.85;
+    stroke: #BF616A;
+    stroke-dasharray: 4 3;
+    stroke-width: 1;
+}
+
+#content .llr-history-graph .llr-zero {
+    opacity: 0.7;
+    stroke: #81A1C1;
+    stroke-width: 1;
+}
+
+#content .llr-history-graph .llr-path-positive,
+#content .llr-history-graph .llr-path-negative {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 2;
+}
+
+#content .llr-history-graph .llr-path-positive {
+    stroke: #7BCB8B;
+}
+
+#content .llr-history-graph .llr-path-negative {
+    stroke: #E07A7A;
+}
+
+#content .llr-history-xaxis {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 0.2rem;
+    color: #A7B1C2;
+    font-size: 10px;
+}
+
+#content .llr-history-graph .llr-point {
+    fill: #ECEFF4;
+}
+
+#content .llr-history-graph .llr-hover-line {
+    opacity: 0;
+    stroke: #ECEFF4;
+    stroke-dasharray: 2 2;
+    stroke-width: 1;
+}
+
+#content .llr-history-graph .llr-hover-point {
+    opacity: 0;
+    fill: #ECEFF4;
+    stroke-width: 1.5;
+}
+
+#content .llr-history-graph .llr-hover-line.active,
+#content .llr-history-graph .llr-hover-point.active {
+    opacity: 0.85;
+}
+
+#content .llr-history-graph .llr-hover-point-positive {
+    stroke: #7BCB8B;
+}
+
+#content .llr-history-graph .llr-hover-point-negative {
+    stroke: #E07A7A;
+}
+
+#content .llr-history-graph .llr-hitbox {
+    cursor: crosshair;
+    fill: transparent;
+}
+
+#content .llr-history-tooltip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: translateY(2px);
+    opacity: 0;
+    z-index: 1;
+    transition: opacity 0.12s ease, transform 0.12s ease;
+    border: 1px solid #4C566A;
+    border-radius: 4px;
+    background-color: rgba(36, 41, 51, 0.96);
+    padding: 0.18rem 0.4rem 0.12rem;
+    pointer-events: none;
+    color: var(--color-font1);
+    font-size: 0.72rem;
+    white-space: nowrap;
+}
+
+#content .llr-history-tooltip.active {
+    transform: translateY(0);
+    opacity: 1;
+}
+
 /* Test Views */
 
 #content .test-list {
@@ -382,7 +562,6 @@ body, html, main{
 }
 
 #content .test-list .test-row > div:last-child > div {
->>>>>>> conflict 1 of 2 ends
     max-height: 5.8em;
     overflow: hidden;
     white-space: normal;
@@ -472,6 +651,7 @@ td pre {
         position: fixed;
         top: 0;
         bottom: 0;
+        z-index: 30;
         width: 100%;
         background-color: var(--color1);
         overflow-y: auto;
@@ -490,7 +670,7 @@ td pre {
         background-color: transparent;
         border: none;
         position: relative;
-        z-index: 10;
+        z-index: 21;
         font-size: 2.2rem;
     }
 
@@ -513,7 +693,7 @@ td pre {
         position: absolute;
         top: 0;
         left: 0;
-        z-index: 10;
+        z-index: 20;
     }
 
     #content-header h2 {
@@ -573,6 +753,11 @@ td pre {
     .workload-container {
         display: flex;
         flex-direction: column;
+    }
+
+    #content .llr-history-widget,
+    #content .llr-history-plot {
+        z-index: 0;
     }
 
     #content #actions {

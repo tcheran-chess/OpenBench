@@ -47,6 +47,8 @@ from OpenBench.templatetags.mytags import longStatBlock
 import OpenBench.views
 import OpenBench.model_utils
 
+LLR_HISTORY_SIZE = 120
+
 
 class TimeControl(object):
 
@@ -165,6 +167,85 @@ def read_git_credentials(engine):
     if os.path.exists(fpath):
         with open(fpath) as fin:
             return { 'Authorization' : 'token %s' % fin.readlines()[0].rstrip() }
+
+
+def llr_history_path(test_id):
+    return os.path.join(MEDIA_ROOT, "llr_history", "%d.json" % (test_id))
+
+
+def load_llr_history(test):
+    path = llr_history_path(test.id)
+    if not os.path.exists(path):
+        return [[0, 0.0]] if test.test_mode == "SPRT" else []
+
+    try:
+        with open(path) as fin:
+            history = json.load(fin)
+        return history if history else [[0, 0.0]]
+    except Exception:
+        return [[0, 0.0]]
+
+
+def interpolate_llr_history(history, max_points=LLR_HISTORY_SIZE):
+    if not history:
+        return []
+
+    normalized = []
+    for games, llr in sorted(history, key=lambda point: point[0]):
+        point = [int(games), float(llr), False]
+        if normalized and normalized[-1][0] == point[0]:
+            normalized[-1] = point
+        else:
+            normalized.append(point)
+
+    if not normalized or normalized[0][0] != 0:
+        normalized.insert(0, [0, 0.0, False])
+
+    if len(normalized) == 1:
+        return normalized
+
+    final_games = max(normalized[-1][0], 1)
+    desired_points = min(max_points, max(2, final_games + 1))
+    step = final_games / float(desired_points - 1)
+    source_index = 0
+    estimated = []
+
+    for index in range(desired_points):
+        target_games = final_games if index == desired_points - 1 else index * step
+
+        while (
+            source_index + 1 < len(normalized)
+            and normalized[source_index + 1][0] < target_games
+        ):
+            source_index += 1
+
+        left = normalized[source_index]
+        if source_index + 1 >= len(normalized):
+            llr = left[1]
+        else:
+            right = normalized[source_index + 1]
+            game_span = right[0] - left[0]
+            if game_span <= 0:
+                llr = right[1]
+            else:
+                ratio = (target_games - left[0]) / float(game_span)
+                llr = left[1] + ratio * (right[1] - left[1])
+
+        display_games = int(round(target_games))
+        estimated.append([display_games, round(llr, 4), True])
+
+    merged = {}
+    for games, llr, is_estimated in estimated + normalized:
+        existing = merged.get(games)
+        if existing is None or (existing[2] and not is_estimated):
+            merged[games] = [games, llr, is_estimated]
+
+    return [merged[key] for key in sorted(merged.keys())]
+
+
+def get_llr_history(test, max_points=LLR_HISTORY_SIZE):
+    return interpolate_llr_history(load_llr_history(test), max_points=max_points)
+
 
 def extract_option(options, option):
 
@@ -551,6 +632,7 @@ def update_test(request, machine):
         # gets updated as per this function, or NOTHING gets updated.
 
         test = Test.objects.select_for_update().get(id=test_id)
+        should_record_llr = False
 
         if test.finished or test.deleted:
             return { 'stop' : True }
@@ -584,6 +666,7 @@ def update_test(request, machine):
             test.passed   = test.currentllr > test.upperllr
             test.failed   = test.currentllr < test.lowerllr
             test.finished = test.passed or test.failed
+            should_record_llr = True
 
         elif test.test_mode == 'GAMES':
 
@@ -610,6 +693,9 @@ def update_test(request, machine):
             test.passed = test.finished = test.games >= test.max_games
 
         test.save()
+
+        if should_record_llr:
+            record_llr_history(test)
 
         # Update Result object; No risk from concurrent access
         Result.objects.filter(id=result_id).update(
@@ -668,3 +754,54 @@ def update_test(request, machine):
         })
 
     return [{}, { 'stop' : True }][test.finished]
+
+
+def downsample_history(history, target_size=LLR_HISTORY_SIZE):
+    N = len(history)
+    if N <= target_size:
+        return history
+
+    xs = [x for x, _ in history]
+    xmin = xs[0]
+    xmax = xs[-1]
+    step = (xmax - xmin) / float(target_size - 1)
+
+    downsampled = []
+    j = 0
+    for i in range(target_size):
+        target_x = xmin + i * step
+
+        while j < N - 1 and xs[j] < target_x:
+            j += 1
+
+        if j == 0:
+            downsampled.append(history[j])
+        else:
+            prev = xs[j - 1]
+            curr = xs[j]
+            if abs(prev - target_x) <= abs(curr - target_x):
+                downsampled.append(history[j - 1])
+            else:
+                downsampled.append(history[j])
+    return downsampled
+
+
+def record_llr_history(test):
+    history = load_llr_history(test)
+    point = [test.games, round(test.currentllr, 4)]
+
+    if history and history[-1][0] == point[0]:
+        history[-1] = point
+    else:
+        history.append(point)
+
+    if not history or history[0][0] != 0:
+        history.insert(0, [0, 0.0])
+
+    if len(history) >= LLR_HISTORY_SIZE * 2:
+        history = downsample_history(history, LLR_HISTORY_SIZE)
+
+    path = llr_history_path(test.id)
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w") as fout:
+        json.dump(history, fout)
