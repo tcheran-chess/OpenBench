@@ -51,6 +51,7 @@ def view_workload(request, workload, workload_type):
     if workload_type == 'TEST':
         data['type']= workload_type
         data['dev_text'] = 'Dev'
+        data["llr_history_endpoint"] = "/api/test/%d/llr-history/" % (workload.id)
 
     if workload_type == 'TUNE':
         data['type'] = workload_type

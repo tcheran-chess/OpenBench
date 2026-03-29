@@ -18,7 +18,9 @@
 #                                                                             #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-import django.urls, OpenBench.views
+import django.urls
+
+import OpenBench.views
 
 urlpatterns = [
 
@@ -92,6 +94,7 @@ urlpatterns = [
     django.urls.path(r'api/pgns/<int:pgn_id>/', OpenBench.views.api_pgns),
     django.urls.path(r'api/spsa/<int:workload_id>/<str:query>/', OpenBench.views.api_spsa),
     django.urls.path(r'api/workload/<int:workload_id>/<str:query>/', OpenBench.views.api_workload),
+    django.urls.path(r'api/test/<int:id>/llr-history/', OpenBench.views.test_llr_history),
 
     # Redirect anything else to the Index
     django.urls.path(r'', OpenBench.views.index),
