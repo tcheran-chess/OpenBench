@@ -123,7 +123,7 @@ def create_genfens_opening_book(args):
 
     try: # Each process will deposit exactly N results into the Queue
         for iteration in range(N * threads):
-            args['output'].write(convert_fen_to_epd(output.get(timeout=15)) + '\n')
+            args['output'].write(convert_fen_to_epd(output.get(timeout=150)) + '\n')
             genfens_progress_bar(iteration+1, N * threads)
 
     except queue.Empty: # Force kill the engine, thus causing the processes to finish
