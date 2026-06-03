@@ -89,6 +89,11 @@
             "workload_size" : 128
         },
 
+        "DFRC" : {
+            "datagen_custom_genfens"      : "dfrc true",
+            "book_name"         : "DFRC.epd"
+        },
+
         "5k Nodes" : {
             "both_time_control" : "N=5000"
         },
