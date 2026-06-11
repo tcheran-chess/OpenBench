@@ -102,6 +102,14 @@ body, html, main{
     background-color: black;
 }
 
+#content .test-list.stripes .test-row:nth-child(odd of .test-row) {
+    background-color: var(--color1);
+}
+
+#content .test-list.stripes .test-row:nth-child(even of .test-row) {
+    background-color: var(--color2);
+}
+
 /* Tables that have hoverable table rows */
 
 #content .hoverable tr:nth-child(odd):hover:not(.table-header) {
@@ -114,6 +122,10 @@ body, html, main{
 
 #content .hoverable tr:hover{
     background-color: var(--color1);
+}
+
+#content .test-list.hoverable .test-row:hover {
+    background-color: #323232;
 }
 
 /* Tables that are too long can wrap words */
@@ -163,6 +175,33 @@ body, html, main{
     background-color: #171717;
     height: 0.4rem;
     padding: 0px;
+}
+
+/* Grid-based header/spacer divs (used by .test-list) */
+
+#content .test-list .table-header {
+    grid-column: 1 / -1;
+    border-radius: 12px 12px 0 0;
+    color: var(--color-font3);
+    font-weight: 400;
+    background-color: #171717;
+    padding: 10px 12px 6px 12px;
+    text-align: center;
+}
+
+#content .test-list .table-small-header {
+    grid-column: 1 / -1;
+    color: var(--color-font3);
+    font-size: small;
+    background-color: #171717;
+    padding: 10px 12px 6px 12px;
+    text-align: center;
+}
+
+#content .test-list .table-spacer {
+    grid-column: 1 / -1;
+    background-color: var(--color1);
+    height: 1rem;
 }
 
 /* Generic Table CSS for all Tables */
@@ -314,15 +353,36 @@ body, html, main{
 /* Test Views */
 
 #content .test-list {
+    display: grid;
+    grid-template-columns: auto auto auto 1fr;
     width: 100%;
 }
 
-#content .test-list tr td.test-info {
-    width: 100%;
-    max-width: 0;
+#content .test-list-dated {
+    grid-template-columns: auto auto auto auto 1fr;
 }
 
-#content .test-list tr td.test-info div {
+#content .test-list .test-row {
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-column: 1 / -1;
+}
+
+#content .test-list .test-row > div {
+    display: flex;
+    align-items: center;
+    color: var(--color-font2);
+    border-bottom: 1px #444444 solid;
+    padding: 10px 12px 6px 12px;
+    min-width: 0;
+}
+
+#content .test-list .test-row > div.statblock {
+    color: black;
+}
+
+#content .test-list .test-row > div:last-child > div {
+>>>>>>> conflict 1 of 2 ends
     max-height: 5.8em;
     overflow: hidden;
     white-space: normal;
@@ -489,6 +549,27 @@ td pre {
     }
 
     /* Test Views */
+    #content .test-list {
+        grid-template-columns: minmax(0, 1fr) auto;
+        overflow-x: auto;
+    }
+
+    #content .test-list-dated {
+        grid-template-columns: auto minmax(0, 1fr) auto;
+    }
+
+    #content .test-list .test-row > div {
+        white-space: normal;
+    }
+
+    #content .test-list .test-row > div:last-child {
+        display: none;
+    }
+
+    #content .test-list .test-row > div.statblock {
+        grid-column: 1 / -1;
+    }
+
     .workload-container {
         display: flex;
         flex-direction: column;
@@ -507,10 +588,11 @@ td pre {
         overflow-x: auto;
     }
 
-    #content .test-list tr td.test-info {
+    #content .test-list div.test-info {
         display: none;
     }
 }
+
 
 
 /* On-hover for long engine options in workloads */

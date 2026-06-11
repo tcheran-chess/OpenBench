@@ -12,47 +12,47 @@
 </style>
 {% endblock %}
 
-    <table class="test-list stripes hoverable">
+    <div class="test-list stripes hoverable">
 
         <!-- Only show Pending tests for the front page of the Index -->
         {% if paging.page == 1 %}
 
             <!-- Currently Pending tests (Waiting to be approved) -->
             {% if pending %}
-                <tr class="table-header"><th colspan='7'>Pending</th></tr>
+                <div class="table-header">Pending</div>
                 {% for test in pending %}
-                    <tr>
+                    <div class="test-row">
                         {% include "OpenBench/Blocks/testsummary.html" %}
-                    </tr>
+                    </div>
                 {% endfor %}
-                <tr class="table-spacer"><th colspan='7'></th></tr>
+                <div class="table-spacer"></div>
             {% endif %}
 
             <!-- Currently Running tests (Waiting to be completed) -->
             {% if active %}
-                <tr class="table-header"><th colspan='7'>Active {{status}}</th></tr>
+                <div class="table-header">Active {{status}}</div>
                 {% for group in active %}
-                    <tr class="table-small-header"><th colspan='7'>Priority {{group.priority}}</th></tr>
+                    <div class="table-small-header">Priority {{group.priority}}</div>
                     {% for test in group.tests %}
-                        <tr>
+                        <div class="test-row">
                             {% include "OpenBench/Blocks/testsummary.html" %}
-                        </tr>
+                        </div>
                     {% endfor %}
                 {% endfor %}
-                <tr class="table-spacer"><th colspan='7'></th></tr>
+                <div class="table-spacer"></div>
             {% endif %}
 
         {% endif %}
 
         <!-- Tests which have already finished -->
-        <tr class="table-header"><th colspan='7'>Finished</th></tr>
+        <div class="table-header">Finished</div>
         {% for test in completed %}
-            <tr>
+            <div class="test-row">
                 {% include "OpenBench/Blocks/testsummary.html" %}
-            </tr>
+            </div>
         {% endfor %}
 
-    </table>
+    </div>
 
     {% include "OpenBench/Blocks/pagebrowser.html" %}
 
