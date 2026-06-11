@@ -211,12 +211,12 @@
 
     {% if tests %}<div class="search-results-spacer"></div>{% endif %}
 
-    <table class="test-list stripes hoverable">
+    <div class="test-list test-list-dated stripes hoverable">
         {% for test in tests %}
-            <tr>
-                <td class="datestamp">{{test.creation|date:"U"}}</td>
+            <div class="test-row">
+                <div class="datestamp">{{test.creation|date:"U"}}</div>
                 {% include "OpenBench/Blocks/testsummary.html" %}
-            </tr>
+            </div>
         {% endfor %}
-    </table>
+    </div>
 {% endblock %}
