@@ -155,11 +155,11 @@
 
         <!-- Elo, (SPRT/LRR if SPRT, otherwise CONF), Games -->
         {% if type == "TEST" %}
-            <pre class="long-statblock" id="long-statblock">{{workload|longStatBlock|linebreaksbr}}</pre>
+            <pre class="long-statblock" id="long-statblock" data-test-id="{{workload.id}}" data-statblock="long">{{workload|longStatBlock|linebreaksbr}}</pre>
         {% elif type == "TUNE" %}
-            <pre class="long-statblock" id="long-statblock">{{workload|shortStatBlock|linebreaksbr}}</pre>
+            <pre class="long-statblock" id="long-statblock" data-test-id="{{workload.id}}" data-statblock="long">{{workload|shortStatBlock|linebreaksbr}}</pre>
         {% elif type == "DATAGEN" %}
-            <pre class="long-statblock" id="long-statblock">{{workload|longStatBlock|linebreaksbr}}</pre>
+            <pre class="long-statblock" id="long-statblock" data-test-id="{{workload.id}}" data-statblock="long">{{workload|longStatBlock|linebreaksbr}}</pre>
         {% endif %}
 
         <!-- Forum to modify the Priority, Throughput, or (Tests only) Workload Size -->
