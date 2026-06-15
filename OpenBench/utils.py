@@ -42,7 +42,8 @@ from OpenSite.settings import MEDIA_ROOT, PROJECT_PATH
 from OpenBench.config import OPENBENCH_CONFIG, PRESET_TYPES, verify_engine_presets
 from OpenBench.models import *
 from OpenBench.stats import TrinomialSPRT, PentanomialSPRT
-from OpenBench.templatetags.mytags import longStatBlock
+
+import OpenBench.sse
 
 import OpenBench.views
 import OpenBench.model_utils
@@ -723,6 +724,15 @@ def update_test(request, machine):
         Machine.objects.filter(id=machine_id).update(
             updated=timezone.now()
         )
+
+    long_block = OpenBench.templatetags.mytags.longStatBlock(test) if test.test_mode != 'SPSA' else OpenBench.templatetags.mytags.shortStatBlock(test)
+    OpenBench.sse.broadcast({
+        'test_id'          : test.id,
+        'short_stat_block' : OpenBench.templatetags.mytags.shortStatBlock(test),
+        'long_stat_block'  : long_block,
+        'colour'           : OpenBench.templatetags.mytags.testResultColour(test),
+        'finished'         : test.finished,
+    })
 
     discord_webhook_url = os.environ["OPENBENCH_DISCORD_WEBHOOK_URL"]
 

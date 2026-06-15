@@ -23,6 +23,8 @@
         {% block scripts %}
         {% endblock %}
 
+        <script src="{% static 'sse.js' %}?{{ static_version }}"></script>
+
         <script>
             document.addEventListener('DOMContentLoaded', function() {
 

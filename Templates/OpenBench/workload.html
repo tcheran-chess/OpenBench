@@ -189,6 +189,25 @@
 
             initializeLlrHistoryWidgets(document);
             queueLlrHistoryWidgetLoad();
+
+            window.refreshLlrHistoryWidget = function(testId) {
+                var container = document.getElementById('llr-history-container');
+                if (!container || container.dataset.testId !== String(testId)) return;
+                if (container.dataset.refreshing) return;
+
+                container.dataset.refreshing = 'true';
+                fetch('/api/test/' + testId + '/llr-history/', { credentials: 'same-origin' })
+                    .then(function(response) {
+                        if (!response.ok) throw new Error('Failed');
+                        return response.text();
+                    })
+                    .then(function(markup) {
+                        container.innerHTML = markup;
+                        initializeLlrHistoryWidget(container.querySelector('.llr-history-widget'));
+                    })
+                    .catch(function() {})
+                    .finally(function() { delete container.dataset.refreshing; });
+            };
         });
     </script>
 
@@ -336,11 +355,11 @@
 
         <!-- Elo, (SPRT/LRR if SPRT, otherwise CONF), Games -->
         {% if type == "TEST" %}
-            <pre class="long-statblock" id="long-statblock">{{workload|longStatBlock|linebreaksbr}}</pre>
+            <pre class="long-statblock" id="long-statblock" data-test-id="{{workload.id}}" data-statblock="long">{{workload|longStatBlock|linebreaksbr}}</pre>
         {% elif type == "TUNE" %}
-            <pre class="long-statblock" id="long-statblock">{{workload|shortStatBlock|linebreaksbr}}</pre>
+            <pre class="long-statblock" id="long-statblock" data-test-id="{{workload.id}}" data-statblock="long">{{workload|shortStatBlock|linebreaksbr}}</pre>
         {% elif type == "DATAGEN" %}
-            <pre class="long-statblock" id="long-statblock">{{workload|longStatBlock|linebreaksbr}}</pre>
+            <pre class="long-statblock" id="long-statblock" data-test-id="{{workload.id}}" data-statblock="long">{{workload|longStatBlock|linebreaksbr}}</pre>
         {% endif %}
 
         <!-- Forum to modify the Priority, Throughput, or (Tests only) Workload Size -->
@@ -384,7 +403,7 @@
         {% if workload.test_mode == "SPRT" %}
             <div class="llr-history-panel" title="LLR history over the lifetime of the test">
                 <div class="llr-history-label">LLR History</div>
-                <div id="llr-history-container" class="llr-history-loader" data-history-url="{{llr_history_endpoint}}">
+                <div id="llr-history-container" class="llr-history-loader" data-history-url="{{llr_history_endpoint}}" data-test-id="{{workload.id}}">
                     <div class="llr-history-chart">
                         <div class="llr-history-yaxis">
                             <div></div>
