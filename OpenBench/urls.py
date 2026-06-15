@@ -96,6 +96,8 @@ urlpatterns = [
     path(r'api/spsa/<int:workload_id>/<str:query>/', views.api_spsa),
     path(r'api/workload/<int:workload_id>/<str:query>/', views.api_workload),
 
+    path(r'api/sse/', views.sse_stream),
+
     # Redirect anything else to the Index
     path(r'', views.index),
 
