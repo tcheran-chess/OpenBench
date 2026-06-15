@@ -947,6 +947,29 @@ def client_submit_pgn(request, machine):
 #                                                                             #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
+import queue as _queue_module
+import OpenBench.sse as _sse
+
+def sse_stream(request):
+
+    def event_stream():
+        client_id, q = _sse.subscribe()
+        try:
+            yield ': connected\n\n'
+            while True:
+                try:
+                    payload = q.get(timeout=25)
+                    yield 'data: %s\n\n' % payload
+                except _queue_module.Empty:
+                    yield ': keepalive\n\n'
+        finally:
+            _sse.unsubscribe(client_id)
+
+    response = django.http.StreamingHttpResponse(event_stream(), content_type='text/event-stream')
+    response['Cache-Control'] = 'no-cache'
+    response['X-Accel-Buffering'] = 'no'
+    return response
+
 def api_response(data):
     return HttpResponse(json.dumps(data, indent=4), content_type='application/json')
 
