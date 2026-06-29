@@ -98,7 +98,7 @@ def spsa_param_digest(workload):
     r_compression = (spsa_run.a_ratio * spsa_run.iterations + iteration) ** spsa_run.alpha
 
     # If these headers are changed here, they should be changed in Templates/OpenBench/workload.html
-    digest = [['Name', 'Curr', 'Start', 'Min', 'Max', 'C', 'C_end', 'R', 'R_end']]
+    digest = [['Name', 'Curr', 'Start', 'Min', 'Max', '% Change', 'C', 'C_end', 'R', 'R_end']]
 
     for param in spsa_run.parameters.order_by('index'):
 
@@ -107,12 +107,16 @@ def spsa_param_digest(workload):
         r    = param.a_value / r_compression / c ** 2
         fstr = '%.4f' if param.is_float else '%d'
 
+        param_range = param.max_value - param.min_value
+        pct_change  = (param.value - param.start) / param_range * 100 if param_range else 0.0
+
         digest.append([
             param.name,
             '%.4f' % (param.value),
             fstr   % (param.start),
             fstr   % (param.min_value),
             fstr   % (param.max_value),
+            '%+.1f%%' % (pct_change),
             '%.4f' % (c),
             '%.4f' % (param.c_end),
             '%.4f' % (r),

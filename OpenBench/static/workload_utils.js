@@ -212,9 +212,17 @@ async function fetch_spsa_digest(workload_id) {
         const values = lines[i].split(',')
         const tr = document.createElement('tr')
 
-        values.forEach(value => {
+        values.forEach((value, index) => {
             const td = document.createElement('td')
             td.textContent = value
+            if (index === 5) {
+                const pct = parseFloat(value)
+                if (!isNaN(pct) && pct !== 0) {
+                    const t = Math.round(Math.min(Math.abs(pct) / 50, 1.0) * 100)
+                    const target = pct > 0 ? '#00AF00' : '#DC3232'
+                    td.style.color = `color-mix(in srgb, ${target} ${t}%, currentColor)`
+                }
+            }
             tr.appendChild(td)
         })
 
