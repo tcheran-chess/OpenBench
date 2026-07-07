@@ -32,7 +32,7 @@ from django.contrib.auth import authenticate
 from django.core.files.base import ContentFile
 from django.core.files.storage import FileSystemStorage
 from django.db import transaction
-from django.db.models import F, Q
+from django.db.models import F, Q, Sum
 from django.http import FileResponse, HttpResponse
 from django.utils import timezone
 from wsgiref.util import FileWrapper
@@ -264,17 +264,20 @@ def get_pending_tests():
     t = Test.objects.select_related('dev', 'base').filter(approved=False)
     t = t.exclude(finished=True)
     t = t.exclude(deleted=True)
+    t = t.annotate(timelosses=Sum('test__timeloss'))
     return t.order_by('-creation')
 
 def get_active_tests():
     t = Test.objects.select_related('dev', 'base').filter(approved=True)
     t = t.exclude(finished=True)
     t = t.exclude(deleted=True)
+    t = t.annotate(timelosses=Sum('test__timeloss'))
     return t.order_by('-priority', '-currentllr')
 
 def get_completed_tests():
     t = Test.objects.select_related('dev', 'base').filter(finished=True)
     t = t.exclude(deleted=True)
+    t = t.annotate(timelosses=Sum('test__timeloss'))
     return t.order_by('-updated')
 
 def group_active_tests_by_priority(active):

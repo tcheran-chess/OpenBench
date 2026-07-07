@@ -2,6 +2,7 @@
 <div>
     <a href="{{test|workload_url}}">{{test|prettyDevName}}</a>
     {% if test.error %} <span style="color: red; cursor: pointer" title="Crash or illegal move">*</span> {% endif %}
+    {% if test.timelosses %} <span style="color: #d124d1; cursor: pointer" title="Time loss">*</span> {% endif %}
     {% if test|test_is_fischer %} <span style="color: green; cursor: pointer" title="Fischer random chess">*</span> {% endif %}
 </div>
 <div>
