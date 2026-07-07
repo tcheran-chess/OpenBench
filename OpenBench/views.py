@@ -43,7 +43,7 @@ from django.contrib.auth.models import User
 from OpenSite.settings import MEDIA_ROOT
 
 from django.db import transaction
-from django.db.models import F, Q
+from django.db.models import F, Q, Sum
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.files.storage import FileSystemStorage
@@ -418,7 +418,7 @@ def search(request):
     if tc_value := params.get('tc-value-input', ''):
         tests = tests.filter(dev_time_control__contains=tc_value)
 
-    filtered = list(tests)
+    filtered = list(tests.annotate(timelosses=Sum('test__timeloss')))
 
     # Echo the submitted values back so the form stays populated for tweaking
 
