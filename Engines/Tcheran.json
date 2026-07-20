@@ -1,6 +1,6 @@
 {
     "private" : false,
-    "nps"     : 1800000,
+    "nps"     : 1400000,
     "source"  : "https://github.com/tcheran-chess/tcheran",
 
     "build" : {
