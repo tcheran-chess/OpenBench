@@ -440,7 +440,7 @@ def collect_github_info(errors, request, field):
         errors.append('Unable to parse a Bench for %s' % (branch))
         return
 
-    info   = request.POST['info'] or strip_message(data['commit']['message'])
+    info   = request.POST['info']
     source = OpenBench.utils.path_join(base, 'zipball', data['sha'])
     return (source, branch, data['sha'], bench, info)
 
