@@ -81,7 +81,7 @@
         "default" : {
             "base_branch"   : "master",
             "dev_branch"    : "master",
-            "both_options"  : "Threads=1 Hash=16 Minimal=true SoftNodes=true SoftNodesHardFactor=10",
+            "both_options"  : "Threads=1 Hash=16 Minimal=true SoftNodes=true SoftNodesHardFactor=100",
             "win_adj"       : "movecount=4 score=2000",
             "draw_adj"      : "movenumber=40 movecount=8 score=10",
             "syzygy_adj"    : "DISABLED",
