@@ -1,0 +1,194 @@
+body {
+    --llr-pos    : #58BC70;
+    --llr-yellow : #BEB95F;
+    --llr-neg    : #C57C69;
+    --llr-mid    : #6E777D;
+}
+
+/* The graph palette uses descriptive tokens from the original mockup. Map
+   those tokens to this checkout's existing palette so none of its rules drop
+   when the browser encounters an undefined custom property. */
+#content {
+    --bg-1      : var(--color1);
+    --bg-deep   : #15191b;
+    --line      : var(--color3);
+    --fg-1      : var(--color-font1);
+    --teal      : #3FA2B9;
+    --teal-deep : #258b9a;
+    --font-mono : "Courier Prime", monospace;
+    --radius-sm : 2px;
+}
+
+/* LLR history graph */
+
+#content .llr-history-label {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    text-transform: lowercase;
+    color: var(--teal);
+    margin: 0 0 0.35rem 2.3px;
+}
+
+#content .llr-history-widget {
+    position: relative;
+    display: inline-block;
+}
+
+#content .llr-history-chart {
+    display: block;
+}
+
+#content .llr-history-main {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    min-width: 0;
+}
+
+#content .llr-history-plot {
+    position: relative;
+}
+
+#content .llr-history-graph {
+    display: block;
+    width: 386.4px;
+    height: 132.2px;
+    max-width: 100%;
+}
+
+#content .llr-history-graph .llr-bg {
+    fill: var(--bg-1);
+    stroke: var(--line);
+    stroke-width: 1;
+}
+
+#content .llr-history-graph .llr-bound {
+    stroke: rgba(63, 162, 185, 0.55);
+    stroke-dasharray: 4 3;
+    stroke-width: 1;
+}
+
+#content .llr-history-graph .llr-bound-label {
+    fill: rgba(134, 194, 213, 0.7);
+    font-family: inherit;
+    font-size: 9px;
+    font-variant-numeric: tabular-nums;
+}
+
+#content .llr-history-graph .llr-zero {
+    stroke: rgba(219, 222, 225, 0.28);
+    stroke-width: 1;
+}
+
+#content .llr-history-graph .llr-path {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.9;
+    vector-effect: non-scaling-stroke;
+}
+
+/* Each stop's real colour is an inline color-mix against the neutral; these
+   are the flat fallbacks a parser without color-mix drops back to. */
+
+#content .llr-history-graph .llr-stop-pos    { stop-color: var(--llr-pos);    }
+#content .llr-history-graph .llr-stop-yellow { stop-color: var(--llr-yellow); }
+#content .llr-history-graph .llr-stop-neg    { stop-color: var(--llr-neg);    }
+
+#content .llr-history-graph .llr-fill-pos    { color: var(--llr-pos);    }
+#content .llr-history-graph .llr-fill-yellow { color: var(--llr-yellow); }
+#content .llr-history-graph .llr-fill-neg    { color: var(--llr-neg);    }
+
+#content .llr-history-graph .llr-endpoint {
+    fill: currentColor;
+    stroke: var(--bg-1);
+    stroke-width: 1;
+}
+
+#content .llr-history-graph .llr-endpoint-grp {
+    animation: llr-fadein 0.35s ease-out 0.5s both;
+}
+
+#content .llr-history-graph .llr-endpoint-halo {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.3;
+    vector-effect: non-scaling-stroke;
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: llr-pulse 2.4s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+#content .llr-history-graph .llr-reveal {
+    transform-origin: 0 0;
+    animation: llr-draw 0.6s ease-out;
+}
+
+#content .llr-history-graph .llr-hover-line {
+    stroke: var(--fg-1);
+    stroke-dasharray: 2 2;
+    stroke-width: 1;
+    opacity: 0;
+    pointer-events: none;
+}
+
+#content .llr-history-graph .llr-hover-point {
+    fill: var(--bg-1);
+    stroke: var(--fg-1);
+    stroke-width: 1.5;
+    opacity: 0;
+    pointer-events: none;
+}
+
+#content .llr-history-graph .llr-hover-line.active,
+#content .llr-history-graph .llr-hover-point.active {
+    opacity: 0.9;
+}
+
+#content .llr-history-graph .llr-hover-point.pos    { stroke: var(--llr-pos);    }
+#content .llr-history-graph .llr-hover-point.yellow { stroke: var(--llr-yellow); }
+#content .llr-history-graph .llr-hover-point.neg    { stroke: var(--llr-neg);    }
+
+#content .llr-history-graph .llr-hitbox {
+    fill: transparent;
+    cursor: crosshair;
+}
+
+#content .llr-history-tooltip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 5.8px 11.5px 4.6px;
+    background-color: var(--bg-deep);
+    border: 1px solid var(--teal-deep);
+    border-radius: var(--radius-sm);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.55);
+    color: var(--fg-1);
+    font-size: 15px;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.12s ease;
+}
+
+#content .llr-history-tooltip.active {
+    opacity: 1;
+}
+
+@keyframes llr-draw   { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes llr-fadein { from { opacity: 0;          } to { opacity: 1;           } }
+@keyframes llr-pulse  {
+    0%   { transform: scale(1);   opacity: 0.5; }
+    70%  {                        opacity: 0;   }
+    100% { transform: scale(2.4); opacity: 0;   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #content .llr-history-graph .llr-reveal,
+    #content .llr-history-graph .llr-endpoint-grp,
+    #content .llr-history-graph .llr-endpoint-halo { animation: none; }
+}
+

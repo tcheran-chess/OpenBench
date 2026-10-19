@@ -3,16 +3,20 @@
 {% block title %}{{ workload }}{% endblock %}
 
 {% load mytags %}
+{% load llr_tags %}
 {% load static %}
 
 {% block scripts %}
 
     <script src="{% static 'workload_utils.js' %}?{{ static_version }}"></script>
+    <link rel="stylesheet" href="{% static 'llr_history.css' %}?{{ static_version }}">
+    <script src="{% static 'llr_history.js' %}?{{ static_version }}"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             fetch_summary({{workload.id}});
             fetch_results({{workload.id}});
+            init_llr_history_widgets();
         });
     </script>
 
@@ -161,6 +165,11 @@
             <pre class="long-statblock" id="long-statblock" data-test-id="{{workload.id}}" data-statblock="long">{{workload|shortStatBlock|linebreaksbr}}</pre>
         {% elif type == "DATAGEN" %}
             <pre class="long-statblock" id="long-statblock" data-test-id="{{workload.id}}" data-statblock="long">{{workload|longStatBlock|linebreaksbr}}</pre>
+        {% endif %}
+
+        {% if type == "TEST" and workload.test_mode == "SPRT" %}
+            <div class="llr-history-label">LLR History</div>
+            {{workload|llr_history_graph}}
         {% endif %}
 
         <!-- Forum to modify the Priority, Throughput, or (Tests only) Workload Size -->

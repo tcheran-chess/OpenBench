@@ -44,6 +44,7 @@ from OpenBench.models import *
 from OpenBench.stats import TrinomialSPRT, PentanomialSPRT
 
 import OpenBench.sse
+import OpenBench.llr_history
 
 import OpenBench.views
 import OpenBench.model_utils
@@ -614,6 +615,10 @@ def update_test(request, machine):
             test.passed = test.finished = test.games >= test.max_games
 
         test.save()
+
+        # Append an LLR sample for the workload page's history graph
+        if test.test_mode == 'SPRT':
+            OpenBench.llr_history.safe_record_llr_history(test)
 
         # Update Result object; No risk from concurrent access
         Result.objects.filter(id=result_id).update(
