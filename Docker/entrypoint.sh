@@ -18,9 +18,6 @@ for f in /home/worker/credentials/credentials.*; do
 done
 
 python3 -u /home/worker/OpenBench/Client/client.py \
-    -U "${OPENBENCH_USERNAME}" \
-    -P "${OPENBENCH_PASSWORD}" \
-    -S "${OPENBENCH_SERVER}" \
     -T "${OPENBENCH_THREADS}" \
     -N 1 \
     -I "${OPENBENCH_IDENTITY}"
