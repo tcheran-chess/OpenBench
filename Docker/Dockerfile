@@ -37,8 +37,6 @@ ENV PATH=/usr/local/cargo/bin:$PATH
 
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \
     | sh -s -- -y --no-modify-path && \
-    rustup component add llvm-tools && \
-    cargo install cargo-pgo && \
     chmod -R a+w $CARGO_HOME $RUSTUP_HOME
 
 # target-cpu=native must be set here: engine Makefiles set it via
