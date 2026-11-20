@@ -17,6 +17,9 @@ plan:
 	fi
 	python3 manage.py plan --threads $(THREADS) --count $(COUNT)
 
+spawn-default: build
+	python3 manage.py spawn --threads `nproc` --count 1 --prefix `hostname`
+
 # Spawn COUNT pinned workers of THREADS logical threads each.
 # CREDS is optional: a dir of credentials.<engine> files, bind-mounted read-only.
 # e.g.: make spawn THREADS=32 COUNT=8 PREFIX=gpu101 [CREDS=/path/to/credentials-dir]
