@@ -19,6 +19,7 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 import csv, io, os, json, secrets
+from threading import Lock
 
 import django.http
 import django.shortcuts
@@ -60,6 +61,9 @@ ERROR_MESSAGES = {
     'requires_login'      : 'All pages require a user login to access',
     'manual_registration' : 'Registration can only be done via an Administrator',
 }
+
+MACHINE_REFRESH_REQUESTS = set()
+MACHINE_REFRESH_REQUESTS_LOCK = Lock()
 
 class UnableToAuthenticate(Exception):
     pass
@@ -483,7 +487,10 @@ def events_errors(request, page=1):
 def machines(request, pk=None):
 
     if pk == None:
-        data = { 'machines' : OpenBench.utils.getRecentMachines() }
+        data = {
+            'machines' : OpenBench.utils.getRecentMachines(),
+            'can_manage' : has_manage_permissions(request),
+        }
         return render(request, 'machines.html', data)
 
     try:
@@ -492,6 +499,24 @@ def machines(request, pk=None):
 
     except:
         return redirect(request, '/machines/', error='Machine does not exist')
+
+def refresh_machine(request):
+
+    if request.method != 'POST':
+        return HttpResponse(status=405)
+
+    if not request.user.is_authenticated:
+        return redirect(request, '/login/', error=ERROR_MESSAGES['requires_login'])
+
+    machines = OpenBench.utils.getRecentMachines()
+    can_manage = has_manage_permissions(request)
+    if not can_manage:
+        machines = machines.filter(user=request.user)
+
+    with MACHINE_REFRESH_REQUESTS_LOCK:
+        MACHINE_REFRESH_REQUESTS.update(machines.values_list('id', flat=True))
+
+    return redirect(request, '/machines/', status='Workers will stop their current workloads and look for new ones')
 
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -874,7 +899,20 @@ def client_submit_error(request, machine):
 def client_submit_results(request, machine):
 
     # Returns {}, or { 'stop' : True }
-    return JsonResponse(OpenBench.utils.update_test(request, machine))
+    response = OpenBench.utils.update_test(request, machine)
+    refresh_requested = consume_machine_refresh_request(machine)
+
+    if not response.get('stop') and refresh_requested:
+        response['stop'] = True
+
+    return JsonResponse(response)
+
+def consume_machine_refresh_request(machine):
+    with MACHINE_REFRESH_REQUESTS_LOCK:
+        if machine.id not in MACHINE_REFRESH_REQUESTS:
+            return False
+        MACHINE_REFRESH_REQUESTS.remove(machine.id)
+        return True
 
 @csrf_exempt
 @verify_worker
@@ -883,8 +921,14 @@ def client_heartbeat(request, machine):
     # Force a refresh of the updated timestamp
     machine.save(update_fields=['updated'])
 
+    # Consume a UI request to stop this workload and request another assignment
+    refresh_requested = consume_machine_refresh_request(machine)
+
     # Include a 'stop' header iff the test was finished
     finished = Test.objects.filter(id=int(request.POST['test_id'])).values_list('finished', flat=True).first()
+
+    if refresh_requested:
+        return JsonResponse({ 'stop' : True })
 
     return JsonResponse([{}, { 'stop' : True }][bool(finished)])
 

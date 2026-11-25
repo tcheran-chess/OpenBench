@@ -29,6 +29,13 @@
         }
     </style>
 
+    {% if user.is_authenticated %}
+        <form method="POST" action="/machines/refresh/" style="margin-bottom: 1em;">
+            {% csrf_token %}
+            <button class="anchorbutton btn-yellow" type="submit">{% if can_manage %}Find new work for all workers{% else %}Find new work for all my workers{% endif %}</button>
+        </form>
+    {% endif %}
+
     <table class="hoverable" id="machines-table">
 
         <thead>

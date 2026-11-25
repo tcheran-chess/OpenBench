@@ -44,6 +44,7 @@ urlpatterns = [
     re_path(r'^events(?:/(?P<page>\d+))?/$', views.events_actions),
     re_path(r'^errors(?:/(?P<page>\d+))?/$', views.events_errors),
     re_path(r'^machines(?:/(?P<pk>\d+))?/$', views.machines),
+    path(r'machines/refresh/', views.refresh_machine),
 
     # Links to create, view or manage Workloads (Tests, Tunes, Datagen)
     re_path(r'^(?P<workload_type>tune|test|datagen)/new/$', views.new_workload),
